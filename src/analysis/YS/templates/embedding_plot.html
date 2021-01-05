@@ -1,0 +1,122 @@
+<head>
+    <script
+        src="http://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
+        integrity="sha512-hgoywpb1bcTi1B5kKwogCTG4cvTzDmFCJZWjit4ZimDIgXu7Dwsreq8GOQjKVUxFwxCWkLcJN5EN0W0aOngs4g=="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.css" integrity="sha512-WUYSspsMSeZ5Rh9CMn8wP9W+8/1ukN1r0CJjw5ZNCCZkM49nig92GzbOur5CpoDcnT+4gVMbPZB5P3su7Z799Q==" crossorigin="anonymous" />
+    <script>data = /*DATA*/</script>
+    <script>
+        function init_traces(){
+            let traces = []
+            data.forEach(d => traces.push({
+                x: d.data.x,
+                y: d.data.y,
+                text: d.data.tooltip,
+                hoverinfo: 'text',
+                type: 'scatter',
+                mode: 'markers',
+                marker: {
+                    color: d.color
+                },
+                name: d.molecule_type
+            }));
+
+            return traces;
+        }
+
+        function update_plot(canvas, traces){
+            
+            let layout = {
+                height: window.innerHeight * 0.8,
+                hovermode: 'closest',
+                xaxis: {zeroline: false},
+                yaxis: {zeroline: false}
+            };
+
+            let config = {
+                responsive: true,
+                toImageButtonOptions: {
+                    format: 'svg',
+                    filename: 'embedding_plot'
+                }
+            };
+
+            Plotly.react(canvas, traces, layout, config);
+        }
+
+        function init_select(element_id, canvas){
+
+            // Reshape data from column-wise do row-wise
+            let search_data = [];
+            for(let d in data){
+                for(let i=0; i < data[d].data.ID.length; i++){
+                    search_data.push({
+                        ID: data[d].data.ID[i],
+                        searchstr: data[d].data.searchstr[i],
+                        loc: "" + d + "-" + i
+                    });
+                }
+            }
+
+            n = data.length
+
+            function selectize_update(selection_str){
+                console.log(selection_str);
+                let update = {selectedpoints: false}
+                if(selection_str){
+                    update.selectedpoints = [];
+                    for(let i=0; i<n; i++)
+                        update.selectedpoints.push([]);
+                    
+                    selection_str.split(',').forEach(str => {
+                        let idxs = str.split('-');
+                        update.selectedpoints[parseInt(idxs[0])].push(parseInt(idxs[1]));
+                    });
+                }
+                console.log(update);
+                Plotly.restyle(canvas, update, Array.from(Array(n).keys()));
+            }
+
+            $('#'+element_id).selectize({
+                persist: false,
+                maxItems: null,
+                valueField: 'loc',
+                labelField: 'ID',
+                searchField: ['searchstr'],
+                options: search_data,
+                render: {
+                    item: function(item, escape) {
+                        // Is div needed?
+                        return '<div><span>' + item.ID + '</span></div>';
+                    },
+                    option: function(item, escape) {
+                        return '<div><span>' + escape(item.searchstr) + '</span></div>';
+                    }
+                },
+                onChange: selectize_update
+            });
+        }
+
+        function main(){
+
+            let canvas = document.getElementById('plot');
+
+            let traces = init_traces();
+
+            update_plot(canvas, traces);
+
+            init_select('select', canvas);
+        }
+    </script>
+</head>
+<body>
+    <div id="plot"></div>
+    <div id="select"></div>
+    <script>main()</script>
+</body>
+    
