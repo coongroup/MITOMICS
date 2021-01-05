@@ -7,7 +7,12 @@ Code base for MITOMICS project
 ├── LICENSE
 ├── README.md
 ├── data
+│   ├── metadata
+│   ├── tier1
+│   ├── tier2
+│   └── tier3
 ├── reference
+│   └── color_codes.txt
 └── src
     ├── analysis
     │   └── IJM
