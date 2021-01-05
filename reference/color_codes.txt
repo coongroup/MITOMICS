@@ -1,0 +1,5 @@
+# Protein: R0 G57 B71 -> #003947
+# lipid: R44 G150 B106 -> #2c966a
+# Metabolite: R227 G202 B74 -> #e3ca4a
+# Sentinel: R35 G31 B32 -> #231f20
+# MXP: R241 G45 B49 -> #f12d30
