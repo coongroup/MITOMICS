@@ -3,17 +3,19 @@
 ### 1.0-metabolomics_processing.py
 - description: Code to standardize sample names.
 - input:
-    - 
+    - QuantResults_20191030_KAO_H3K_HMDB_runOrderCorrected_20191101.csv
+    - ../proteomics/H3K_Project_Master_Lists.xlsx
 - output:
-    - 
-- notes: This data was input for Yuriy's FC calculations.
+    - metabolomics_data_w_batch.csv
+- notes: This data was input for Yuriy's FC (tier3) calculations.
 
 ### 2.0-metabolomics_processing.py
 - description: Code to standardize sample names.
 - input:
-    - 
+    - metabolomics_data_w_batch.csv
+    - ../proteomics/H3K_Project_Master_Lists.xlsx
 - output:
-    - 
+    - metabolomics_tier2.csv
 - notes:
 
 
