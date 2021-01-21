@@ -1,10 +1,5 @@
 ## Script, data, and processing pipeline details
 
-# combine lipidomics data
-# collapse lipidomcis data
-# filter CoQ species data
-# standardize names
-
 ### 1.0-lipidomics_processing.py
 - description: Code to combine lipidomics batches.
 - input:
