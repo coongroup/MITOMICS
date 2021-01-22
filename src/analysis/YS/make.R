@@ -7,6 +7,7 @@
 
 src_folder <- here::here("src", "analysis", "YS")
 data_folder <- here::here("data")
+results_folder <- here::here("results")
 
 source(file.path(src_folder, "functions.R"))
 source(file.path(src_folder, "plan.R"))
