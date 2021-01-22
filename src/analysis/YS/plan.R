@@ -3,41 +3,31 @@
 #
 # Author: Yuriy Sverchkov
 
+if (!exists(src_folder)) stop("Set the src_folder variable before running this.")
+if (!exists(data_folder)) stop("Set the data_folder variable before running this.")
+if (!exists(results_folder)) stop("Set the results_folder variable before running this.")
+
 # Input files:
-sample_matching_file <- here::here(
-    "data-raw",
-    "DataForYuriy",
-    "h3k_Samples_RespectiveControls.txt")
+sample_matching_file <- file.path(src_folder, "metadata", "sample_control_matches.txt")
 
-proteins_file <- here::here(
-    "data-raw",
-    "DataForYuriy",
-    "2020-05-12_Combined_LFQ_imputed_filtered_ComBat.tsv")
+proteins_file <- file.path(data_folder,
+    "combined_LFQ_filtered_imputed_combat.tsv")
 
-proteins_file_w_metadata <- here::here(
-    "data-raw",
-    "H3KDataForSpotChecking",
+# TODO: Separate metadata from measurements instead of using this file
+proteins_file_w_metadata <- file.path(data_folder,
     "20200514_H3K_proteomics_avg_log2_FC_w_metadata.csv")
 
-metabolites_file <- here::here(
-    "data-raw",
-    "DataForYuriy",
-    "20191106_IJM_metabolomics_data_forCombat.csv")
+metabolites_file <- file.path(data_folder,
+    "metabolomics_data_w_batch.csv")
 
-lipids_file <- here::here(
-    "data-raw",
-    "DataForYuriy",
-    "2020-06-04_combined_lipidomics_data_collapsed.tsv")
+lipids_file <- file.path(data_folder,
+    "combined_lipidomics_data_filtered.tsv")
 
 # Deliverable:
-excel_file <- here::here(
-    "results",
-    "molecule_data.xlsx"
-)
+excel_file <- file.path(results_folder, "molecule_data.xlsx")
 
 ## JWR's excel file and related constants
-xls_jwr_file <- here::here(
-    "data-raw",
+xls_jwr_file <- file.path(data_folder,
     "molecule_data_201001_JWR.xlsx"
 )
 
@@ -56,17 +46,16 @@ xls_jwr_lgl_cols <- c(
     "Complex Q")
 
 # Protein metadata file
-protein_metadata_file <- here::here(
-    "data-clean",
+protein_metadata_file <- file.path(data_folder,
     "protein_metadata.csv"
 )
 
 ## tSNE-related output files
-embedding_html_template <- here::here("templates", "embedding_plot.html")
-mrdm_tsne_html2 <- here::here("figures", "tsne_20201106.html")
+embedding_html_template <- file.path(src_folder, "templates", "embedding_plot.html")
+mrdm_tsne_html2 <- file.path(results_folder, "tsne_figure.html")
 
-tsne_neighbors <- here::here("results", "tsne_neighbors.csv")
-mxp_genes_file <- here::here("data_manual", "mxp_genes.csv")
+tsne_neighbors <- file.path(results_folder, "tsne_neighbors.csv")
+mxp_genes_file <- file.path(src_folder, "metadata", "mxp_genes.csv")
 
 
 ############
