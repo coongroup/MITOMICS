@@ -8,9 +8,6 @@
     * `combined_LFQ_filtered_imputed_combat.tsv` - output from proteomics processing
     * `metabolomics_data_w_batch.csv` - output from metabolomics processing
     * `combined_lipidomics_data_filtered.tsv` - output from lipidomics processing
-    * `20200514_H3K_proteomics_avg_log2_FC_w_metadata.csv`
-    * `molecule_data_201001_JWR.xlsx`
-    * `protein_metadata.csv`
 
 Note: the expected locations of the `results` and `data` folder may be changed by editing the respective definitions of the `results_folder` and `data_folder` variables in `make.R`.
 
@@ -43,7 +40,5 @@ Paths are relative to project root
 * `data/combined_LFQ_filtered_imputed_combat.tsv` - output from proteomics processing
 * `data/metabolomics_data_w_batch.csv` - output from metabolomics processing
 * `data/combined_lipidomics_data_filtered.tsv` - output from lipidomics processing
-* `data/20200514_H3K_proteomics_avg_log2_FC_w_metadata.csv`
-* `data/molecule_data_201001_JWR.xlsx`
-* `data/protein_metadata.csv`
+* `erc/analysis/YS/metadata/protein_metadata.csv`
 

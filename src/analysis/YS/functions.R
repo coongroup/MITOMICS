@@ -102,6 +102,16 @@ make_lipid_intensity_table <- function(filename) {
 }
 
 
+#' Compute intensity summary statistics
+#' 
+summarize_intensities <- function(df)
+    summarize(df,
+        samples = n(),
+        `mean of log2 intensity` = mean(`log2 intensity`),
+        `SD of log2 intensity` = sd(`log2 intensity`),
+        `log2 intensities` = list(`log2 intensity`))
+
+
 #' Function to extract metadata about batches
 #' 
 #' @param protein_batch_matches Dataframe with columns "condition" and "control"
@@ -411,55 +421,24 @@ compute_l2fc_from_ <- function(df)
         ungroup()
 
 
-
-build_metadata <- function(
-    id_df,
-    initial_protein_metadata_file,
-    uniprot_gene_map
-) {
-    # Read protein file
-    protein_meta <- read_csv(
-        initial_protein_metadata_file,
-        col_types = cols_only(
-            `Majority protein ID` = "c",
-            `Protein Groups` = "c",
-            `Fasta Headers` = "c",
-            `NCBI Genes` = "c",
-            `Associated Diseases` = "c",
-            `In Human MitoCarta2.0` = "c"
-        )) %>%
-        # Rename
-        rename(
-            ID = `Majority protein ID`,
-            `protein groups` = `Protein Groups`,
-            `FASTA headers` = `Fasta Headers`,
-            `NCBI genes` = `NCBI Genes`,
-            `associated diseases` = `Associated Diseases`,
-            `in human MitoCarta2.0` = `In Human MitoCarta2.0`
-        ) %>%
-        # Add gene names
-        mutate(
-            `HGNC symbol array` = `protein groups` %>%
-                str_split(fixed(";")) %>%
-                map(function(uniprot_ids)
-                    tibble(uniprot = uniprot_ids) %>%
-                        left_join(uniprot_gene_map, by = "uniprot") %>%
-                        distinct(`HGNC Symbol`) %>%
-                        drop_na() %>%
-                        pull(`HGNC Symbol`)
-                ),
-            `HGNC symbols` = map_chr(
-                `HGNC symbol array`,
-                paste,
-                collapse = ";")
-        )
-
-    # Derive lipid classes
-
-    # Combine data
-    return(left_join(id_df, protein_meta, by = "ID"))
+#' Reads the clean protein metadata file into a variable
+#'
+#' @param path Path to the protein metadata file
+#' @return Data frame
+read_protein_metadata <- function(path) {
+    readr::read_csv(path, col_types = readr::cols(`MICOS/MIB` = readr::col_character()))
 }
 
+#' Build metadata table with rows for all molecules
+#' 
+#' @param molecule_df Dataframe with all molecule IDs and types
+#' @param protein_metadata Dataframe with additional protein metadata
+#' @return Dataframe with metadata linked to every molecule
+build_metadata <- function(molecule_df, protein_metadata) {
+    molecule_df %>%
+        distinct(ID, `molecule type`) %>%
+        left_join(protein_metadata, by = c("ID" = "Molecule ID"))
+}
 
 
 write_excel_tables <- function(long_multiomics, molecule_metadata, out_file) {
@@ -516,23 +495,6 @@ write_excel_tables <- function(long_multiomics, molecule_metadata, out_file) {
 }
 
 
-# Function to extract protein metadata from JWR's excel file
-protein_metadata_from_jwr <- function(
-    in_file,
-    coltypes,
-    rename_cols,
-    lgl_cols,
-    outfile
-){
-    readxl::read_excel(path = in_file, sheet = 1, col_types = coltypes) %>%
-        rename_with(function(x) rename_cols[x], any_of(names(rename_cols))) %>%
-        mutate(across(any_of(lgl_cols), ~ !is.na(.x) & .x == "Yes")) %>%
-        write_csv(outfile)
-
-    return (TRUE)
-}
-
-
 #' Derive the q-adjusted relative difference matrix tuple
 #' 
 #' The q-adjusted relative difference is:
@@ -573,6 +535,54 @@ derive_mrdm_tuple <- function(long_multiomics) {
     result$matrix <- m
 
     return(result)
+}
+
+
+#' Prepare molecule metadata for plots
+#' 
+#' @param molecule_metadata contains molecule type information
+#' @param protein_metadata contains additional protein metadata
+#' @return Metadata table for plot
+metadata_20201007 <- function(molecule_metadata, protein_metadata) {
+    molecule_metadata %>%
+        select(ID, `molecule type`) %>%
+        left_join(protein_metadata %>% rename(ID = `Molecule ID`), by="ID") %>%
+        mutate(
+            mt = `molecule type`,
+            `molecule type` = if_else(`molecule type` == "Protein",
+                if_else(!is.na(`OxPhos complex`), "Protein (OxPhos)",
+                    if_else(!is.na(`Mitoribosome subunit`), "Protein (Mitoribosome)",
+                        if_else(`MitoCarta2.0`, "Protein (Mitochondria)", "Protein")
+                    )
+                ),
+                `molecule type`
+            ),
+            searchstr = paste(`ID`, `Protein groups`, `HGNC symbols`),
+            tt1 = if_else(
+                    `MitoCarta2.0`,
+                    paste0("In MitoCarta2.0",
+                        if_else(is.na(`OxPhos complex`),
+                            if_else(!is.na(`Mitoribosome subunit`),
+                                paste("<br />Mitoribosome subunit", `Mitoribosome subunit`),
+                                ""
+                            ),
+                            paste("<br />OxPhos", `OxPhos complex`)
+                        )
+                    ),
+                as.character(NA)),
+            tooltip = if_else(
+                mt != "Protein",
+                paste(ID, mt, sep = "<br />"),
+                paste(
+                    `Protein groups`,
+                    if_else(is.na(tt1),
+                        `HGNC symbols`,
+                        paste(`HGNC symbols`, tt1, sep = "<br />")),
+                    sep = "<br />"
+                )
+            )
+        ) %>%
+        select(ID, `molecule type`, searchstr, tooltip)
 }
 
 

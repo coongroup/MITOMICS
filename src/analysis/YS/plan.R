@@ -3,19 +3,16 @@
 #
 # Author: Yuriy Sverchkov
 
-if (!exists(src_folder)) stop("Set the src_folder variable before running this.")
-if (!exists(data_folder)) stop("Set the data_folder variable before running this.")
-if (!exists(results_folder)) stop("Set the results_folder variable before running this.")
+# Check that required variables are set
+if (!exists('src_folder')) stop("Set the src_folder variable before running this.")
+if (!exists('data_folder')) stop("Set the data_folder variable before running this.")
+if (!exists('results_folder')) stop("Set the results_folder variable before running this.")
 
 # Input files:
 sample_matching_file <- file.path(src_folder, "metadata", "sample_control_matches.txt")
 
 proteins_file <- file.path(data_folder,
     "combined_LFQ_filtered_imputed_combat.tsv")
-
-# TODO: Separate metadata from measurements instead of using this file
-proteins_file_w_metadata <- file.path(data_folder,
-    "20200514_H3K_proteomics_avg_log2_FC_w_metadata.csv")
 
 metabolites_file <- file.path(data_folder,
     "metabolomics_data_w_batch.csv")
@@ -26,29 +23,8 @@ lipids_file <- file.path(data_folder,
 # Deliverable:
 excel_file <- file.path(results_folder, "molecule_data.xlsx")
 
-## JWR's excel file and related constants
-xls_jwr_file <- file.path(data_folder,
-    "molecule_data_201001_JWR.xlsx"
-)
-
-# Protein metadata column types selector
-xls_jwr_pmct <- c(rep("text", 14), rep("skip", 203))
-
-# Column renaming
-xls_jwr_rename <- c("CI assmebly factor" = "CI assembly factor")
-
-# Columns to smartly convert to logical (after rename)
-xls_jwr_lgl_cols <- c(
-    "KO target",
-    "MitoCarta2.0",
-    "mtDNA encoded",
-    "CI assembly factor",
-    "Complex Q")
-
 # Protein metadata file
-protein_metadata_file <- file.path(data_folder,
-    "protein_metadata.csv"
-)
+protein_metadata_file <- file.path(src_folder, "metadata", "protein_metadata.csv")
 
 ## tSNE-related output files
 embedding_html_template <- file.path(src_folder, "templates", "embedding_plot.html")
@@ -96,9 +72,8 @@ plan <- drake_plan(
 
     # Build metadata
     molecule_metadata = build_metadata(
-        distinct(long_multiomics, ID, `molecule type`),
-        file_in(!!proteins_file_w_metadata),
-        uniprot_genes),
+        long_multiomics,
+        read_protein_metadata(file_in(!!protein_metadata_file))),
 
     # Write excel file
     wrote_excel = write_excel_tables(
@@ -106,23 +81,19 @@ plan <- drake_plan(
         molecule_metadata,
         file_out(!!excel_file)),
 
-    # Protein-specific metadata
-    wrote_protein_metadata = protein_metadata_from_jwr(
-        file_in(!!xls_jwr_file),
-        xls_jwr_pmct,
-        xls_jwr_rename,
-        xls_jwr_lgl_cols,
-        file_out(!!protein_metadata_file)
-    ),
-    
+    # Make a matrix of q-adjusted relative differences    
     mrdm = derive_mrdm_tuple(long_multiomics),
 
+    # Compute perplexity for tSNE
     mrdm_tsne_perplexity = sqrt(nrow(mrdm$matrix)),
+
+    # Compute tSNE embedding
     mrdm_tsne = tsne::tsne(
         X = mrdm$matrix,
         k = 2,
         perplexity = mrdm_tsne_perplexity),
 
+    # Generate tSNE plot
     mrdm_tsne_plot2 = plot_embedding2(
         x = mrdm_tsne[, 1],
         y = mrdm_tsne[, 2],
@@ -139,6 +110,7 @@ plan <- drake_plan(
         html_out = file_out(!!mrdm_tsne_html2)
     ),
 
+    # Generate tSNE neighbors table
     tsne_neighbors_df = nearest_embedding_neighbors(
         radius = 1.0,
         embedding = mrdm_tsne[, 1:2],
