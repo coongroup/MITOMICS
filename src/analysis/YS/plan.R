@@ -8,8 +8,10 @@ if (!exists('src_folder')) stop("Set the src_folder variable before running this
 if (!exists('data_folder')) stop("Set the data_folder variable before running this.")
 if (!exists('results_folder')) stop("Set the results_folder variable before running this.")
 
+metadata_folder <- file.path(data_folder, "metadata")
+
 # Input files:
-sample_matching_file <- file.path(src_folder, "metadata", "sample_control_matches.txt")
+sample_matching_file <- file.path(metadata_folder, "sample_control_matches.txt")
 
 proteins_file <- file.path(data_folder,
     "combined_LFQ_filtered_imputed_combat.tsv")
@@ -24,14 +26,14 @@ lipids_file <- file.path(data_folder,
 excel_file <- file.path(results_folder, "molecule_data.xlsx")
 
 # Protein metadata file
-protein_metadata_file <- file.path(src_folder, "metadata", "protein_metadata.csv")
+protein_metadata_file <- file.path(metadata_folder, "protein_metadata.csv")
 
 ## tSNE-related output files
 embedding_html_template <- file.path(src_folder, "templates", "embedding_plot.html")
 mrdm_tsne_html2 <- file.path(results_folder, "tsne_figure.html")
 
 tsne_neighbors <- file.path(results_folder, "tsne_neighbors.csv")
-mxp_genes_file <- file.path(src_folder, "metadata", "mxp_genes.csv")
+mxp_genes_file <- file.path(metadata_folder, "mxp_genes.csv")
 
 
 ############
