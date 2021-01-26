@@ -21,8 +21,8 @@ Specific targets in the analysis subpipeline can be run by passing their names a
 ## Output produced
 
 * `results/molecule_data.xlsx` An excel workbook containing mean log-fold changes, p-values, and three sets of q-values (in-condition, single-ome, multi-ome).
-* `tsne_figure.html` A visualization of the tSNE embedding (details in the Methods section)
-* `tsne_neighbors.csv` A table listing all neighbors of MXPs on the tSNE plot that fall within one unit.
+* `results/tsne_figure.html` A visualization of the tSNE embedding (details in the Methods section)
+* `results/tsne_neighbors.csv` A table listing all neighbors of MXPs on the tSNE plot that fall within one unit.
 
 ## Software requirements
 
