@@ -1,5 +1,5 @@
-# Main script for running everything.
-# This version loads everything into the global environment.
+# Main file for drake to configure the analysis pipeline.
+# For use with drake::r_make
 #
 # Author: Yuriy Sverchkov
 
@@ -12,10 +12,4 @@ results_folder <- here::here("results")
 source(file.path(src_folder, "functions.R"))
 source(file.path(src_folder, "plan.R"))
 
-# Run make
-cmd_targets <- commandArgs(trailingOnly = TRUE)
-if (length(cmd_targets) > 0) {
-  drake::make(plan, targets = cmd_targets)
-} else {
-  drake::make(plan)
-}
+drake::drake_config(plan)
