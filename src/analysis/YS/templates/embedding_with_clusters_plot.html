@@ -10,9 +10,10 @@
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.css" integrity="sha512-WUYSspsMSeZ5Rh9CMn8wP9W+8/1ukN1r0CJjw5ZNCCZkM49nig92GzbOur5CpoDcnT+4gVMbPZB5P3su7Z799Q==" crossorigin="anonymous" />
     <script>data = /*DATA*/</script>
+    <script>shapes = /*SHAPES*/</script>
     <script>
         function init_traces(){
-            let traces = []
+            let traces = [];
             data.forEach(d => traces.push({
                 x: d.data.x,
                 y: d.data.y,
@@ -21,12 +22,19 @@
                 type: 'scatter',
                 mode: 'markers',
                 marker: {
-                    color: d.color
+                    color: d.color,
+                    size: d.data.size
                 },
                 selected: {
                     marker: {
                         color: '#ff0000',
-                        opacity: 1.0
+                        opacity: 1.0,
+                        size: 10
+                    }
+                },
+                unselected: {
+                    marker: {
+                        opacity: 0.5
                     }
                 },
                 name: d.molecule_type
@@ -41,7 +49,8 @@
                 height: window.innerHeight * 0.8,
                 hovermode: 'closest',
                 xaxis: {zeroline: false},
-                yaxis: {zeroline: false}
+                yaxis: {zeroline: false},
+                shapes: shapes
             };
 
             let config = {
