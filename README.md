@@ -16,12 +16,15 @@ Code base for MITOMICS project
     │   │   ├── multi_omics_heatmap.R
     │   └── YS
     │       ├── README.md
-    │       ├── _drake.R
+    │       ├── make.sh
+    │       ├── _targets.R
     │       ├── functions.R
     │       ├── make.R
-    │       ├── plan.R
+    │       ├── R
+    │       │   └── functions.R
     │       └── templates
-    │           └── embedding_plot.html
+    │           ├── embedding_plot.html
+    │           └── embedding_with_clusters_plot.html
     └── processing
         ├── DRB
         │   └── ImputeMissingH3kValues
