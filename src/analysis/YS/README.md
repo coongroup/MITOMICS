@@ -49,7 +49,5 @@ Paths are relative to project root
 * `data/metadata/sample_control_matches.txt` - download from MassIVE
 * `data/metadata/mxp_genes.csv` - download from MassIVE
 * `data/metadata/protein_metadata.csv` - download from MassIVE
-* `data/data tables/Fold changes, p-values, SDs/20210819_Lipidomics_FCsPvaluesSDs.csv`
-* `data/data tables/Fold changes, p-values, SDs/20210819_Metabolomics_FCsPvaluesSDs.csv`
-* `data/data tables/Fold changes, p-values, SDs/20210819_Proteomics_FCsPvaluesSDs.csv`
+* `data/Supplementary Table 3.xlsx` - download Supplamentary Table 3 from the publication website
 

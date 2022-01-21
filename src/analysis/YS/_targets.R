@@ -49,32 +49,8 @@ list(
   # Data files
 
   tar_target(
-    lipids_file,
-    file.path(
-      data_folder,
-      'data tables',
-      'Fold changes, p-values, SDs',
-      '20210819_Lipidomics_FCsPvaluesSDs.csv'),
-    format = "file"
-  ),
-
-  tar_target(
-    metabolites_file,
-    file.path(
-      data_folder,
-      'data tables',
-      'Fold changes, p-values, SDs',
-      '20210819_Metabolomics_FCsPvaluesSDs.csv'),
-    format = "file"
-  ),
-
-  tar_target(
-    proteins_file,
-    file.path(
-      data_folder,
-      'data tables',
-      'Fold changes, p-values, SDs',
-      '20210819_Proteomics_FCsPvaluesSDs.csv'),
+    data_xlsx,
+    file.path(data_folder, 'Supplementary Table 3.xlsx'),
     format = "file"
   ),
 
@@ -119,9 +95,9 @@ list(
   ),
 
   # Load data
-  tar_target(lipids, read_lipids(lipids_file)),
-  tar_target(metabolites, read_metabolites(metabolites_file)),
-  tar_target(proteins, read_proteins(proteins_file)),
+  tar_target(lipids, read_lipids(data_xlsx, "Lipidomics log2FCsPvaluesSDs")),
+  tar_target(metabolites, read_metabolites(data_xlsx, "Metabolomics log2FCsPvaluesSDs")),
+  tar_target(proteins, read_proteins(data_xlsx, "Proteomics log2FCsPvaluesSDs")),
 
   # Make a combined molecule type dataframe
   tar_target(

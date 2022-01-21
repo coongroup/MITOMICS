@@ -15,29 +15,22 @@ library(qvalue)
 
 # Data loading for 2021-08-19 data
 
-read_lipids <- function(file_path) {
+read_lipids <- function(file_path, sheet) {
 
-    read_csv(file_path) %>%
+    readxl::read_excel(file_path, sheet = sheet) %>%
         rename(ID = `Molecule.ID`) %>%
         make_data_object()
 }
 
-read_metabolites <- function(file_path) {
+read_metabolites <- function(file_path, sheet) {
 
-    wide_df <- read_csv(file_path) %>%
-        rename(ID = `Unique Identifier`) %>%
+    readxl::read_excel(file_path, sheet = sheet) %>%
         make_data_object()
 }
 
-read_proteins <- function(file_path) {
+read_proteins <- function(file_path, sheet) {
 
-    read_csv(
-        file_path,
-        col_types = readr::cols(
-            `MICOS/MIB` = readr::col_character(),
-            `mtDNA encoded` = readr::col_character()
-        )
-    ) %>%
+    readxl::read_excel(file_path, sheet = sheet, guess_max=1E7) %>%
         rename(ID = `Majority protein ID`) %>%
         make_data_object()
 }
